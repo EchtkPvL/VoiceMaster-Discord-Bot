@@ -2,6 +2,14 @@ import discord
 from discord.ext import commands
 import traceback
 import sys
+from os import environ as env
+
+# Ensure all required environment variables are set
+try:
+    env['DISCORD_TOKEN']
+except KeyError:
+    print('[error]: `DISCORD_TOKEN` environment variable required')
+    sys.exit(1)
 
 intents = discord.Intents.default()
 #Message content intent needs to be enabled in the developer portal for your chosen bot.
@@ -10,8 +18,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 bot.remove_command("help")
-
-DISCORD_TOKEN = 'Enter Discord Token here'
 
 initial_extensions = ['cogs.voice']
 
@@ -30,4 +36,4 @@ async def on_ready():
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
 
-bot.run(DISCORD_TOKEN)
+bot.run(env['DISCORD_TOKEN'])
