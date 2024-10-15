@@ -8,6 +8,15 @@ class voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+        conn = sqlite3.connect('voice.db')
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS 'voiceChannel' ('userID' INTEGER, 'voiceID' INTEGER);")
+        c.execute("CREATE TABLE IF NOT EXISTS 'guild' ('guildID' INTEGER, 'ownerID' INTEGER, 'voiceChannelID' INTEGER, 'voiceCategoryID' INTEGER);")
+        c.execute("CREATE TABLE IF NOT EXISTS 'userSettings' ('userID' INTEGER, 'channelName' TEXT, 'channelLimit' INTEGER);")
+        c.execute("CREATE TABLE IF NOT EXISTS 'guildSettings' ('guildID' INTEGER, 'channelName' TEXT, 'channelLimit' INTEGER);")
+        conn.commit()
+        conn.close()
+
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         conn = sqlite3.connect('voice.db')
