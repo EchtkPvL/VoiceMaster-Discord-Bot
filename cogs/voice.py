@@ -27,7 +27,7 @@ class voice(commands.Cog):
                         pass
                     else:
                         await member.send("Creating channels too quickly you've been put on a 15 second cooldown!")
-                        await asyncio.sleep(15)
+                        return
                     c.execute("SELECT voiceCategoryID FROM guild WHERE guildID = ?", (guildID,))
                     voice=c.fetchone()
                     c.execute("SELECT channelName, channelLimit FROM userSettings WHERE userID = ?", (member.id,))
