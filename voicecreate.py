@@ -21,7 +21,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    
+
     for extension in initial_extensions:
         try:
             await bot.load_extension(extension)
