@@ -261,6 +261,54 @@ class voice(commands.Cog):
         conn.commit()
         conn.close()
 
+    @voice.command()
+    async def purge(self, ctx):
+        conn = sqlite3.connect('voice.db')
+        c = conn.cursor()
+        guild = ctx.message.guild
+        guildID = ctx.guild.id
+        id = ctx.author.id
+        if ctx.author.id == ctx.guild.owner_id or ctx.author.id == 331724390653886466:
+            def check(m):
+                return m.author.id == ctx.author.id
+            await ctx.channel.send("**Do you really want to purge everything?** You have 60 seconds to type YES/Y")
+            try:
+                confirm = await self.bot.wait_for('message', check=check, timeout = 60.0)
+            except asyncio.TimeoutError:
+                await ctx.channel.send('Took too long to answer!')
+            else:
+                if confirm.content.lower() == "yes" or confirm.content.lower() == "y":
+                    c.execute('SELECT * FROM voiceChannel')
+                    for row in c:
+                        voiceID = int(row[1])
+                        existing_channel = discord.utils.get(guild.channels, id=voiceID)
+                        if existing_channel is not None:
+                            await existing_channel.delete()
+
+                        c.execute('DELETE FROM voiceChannel WHERE voiceID=?', (voiceID,))
+                        await ctx.channel.send(f'Channel with ID "{voiceID}" purged')
+
+                    c.execute("SELECT * FROM guild WHERE guildID = ?", (guildID,))
+                    res=c.fetchone()
+                    del_voiceChannelID = res[2]
+                    del_voiceCategoryID = res[3]
+
+                    existing_channel = discord.utils.get(guild.channels, id=del_voiceChannelID)
+                    if existing_channel is not None:
+                        await existing_channel.delete()
+
+                    existing_channel = discord.utils.get(guild.channels, id=del_voiceCategoryID)
+                    if existing_channel is not None:
+                        await existing_channel.delete()
+
+                    c.execute('DELETE FROM guild WHERE guildID=?', (guildID,))
+                    await ctx.channel.send("**Everything purged!**")
+                else:
+                    await ctx.channel.send('abort')
+        else:
+            await ctx.channel.send(f"{ctx.author.mention} only the owner of the server can setup the bot!")
+        conn.commit()
+        conn.close()
 
     @voice.command()
     async def name(self, ctx,*, name):
