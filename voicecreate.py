@@ -1,14 +1,16 @@
-import discord
+import discord, traceback, sys, os, dotenv
 from discord.ext import commands
-import traceback
-import sys
-from os import environ as env
+
+# Load environment variables from .env file (if present)
+dotenv.load_dotenv(dotenv_path="config.env")
 
 # Ensure all required environment variables are set
-try:
-    env['DISCORD_TOKEN']
-except KeyError:
+if not os.getenv('DISCORD_TOKEN'):
     print('[error]: `DISCORD_TOKEN` environment variable required')
+    sys.exit(1)
+
+if not os.getenv('DISCORD_ADMIN'):
+    print('[error]: `DISCORD_ADMIN` environment variable required')
     sys.exit(1)
 
 intents = discord.Intents.default()
@@ -36,4 +38,4 @@ async def on_ready():
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
 
-bot.run(env['DISCORD_TOKEN'])
+bot.run(os.getenv('DISCORD_TOKEN'))

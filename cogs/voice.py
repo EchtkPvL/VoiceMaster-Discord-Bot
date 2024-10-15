@@ -1,8 +1,5 @@
-import discord
-import asyncio
+import discord, asyncio, sqlite3, os
 from discord.ext import commands
-import sqlite3
-from os import environ as env
 
 
 class voice(commands.Cog):
@@ -106,7 +103,7 @@ class voice(commands.Cog):
         c = conn.cursor()
         guildID = ctx.guild.id
         id = ctx.author.id
-        if ctx.author.id == ctx.guild.owner_id or ctx.author.id == env['DISCORD_ADMIN']:
+        if ctx.author.id == ctx.guild.owner_id or ctx.author.id == os.getenv('DISCORD_TOKEN'):
             def check(m):
                 return m.author.id == ctx.author.id
             await ctx.channel.send("**You have 60 seconds to answer each question!**")
@@ -143,7 +140,7 @@ class voice(commands.Cog):
     async def setlimit(self, ctx, num):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == env['DISCORD_ADMIN']:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == os.getenv('DISCORD_TOKEN'):
             c.execute("SELECT * FROM guildSettings WHERE guildID = ?", (ctx.guild.id,))
             voice=c.fetchone()
             if voice is None:
@@ -269,7 +266,7 @@ class voice(commands.Cog):
         guild = ctx.message.guild
         guildID = ctx.guild.id
         id = ctx.author.id
-        if ctx.author.id == ctx.guild.owner_id or ctx.author.id == env['DISCORD_ADMIN']:
+        if ctx.author.id == ctx.guild.owner_id or ctx.author.id == os.getenv('DISCORD_TOKEN'):
             def check(m):
                 return m.author.id == ctx.author.id
             await ctx.channel.send("**Do you really want to purge everything?** You have 60 seconds to type YES/Y")
